@@ -1,9 +1,9 @@
-const express = require('express');
-const cors = require('cors');
-const colors = require('colors/safe');
+const express = require("express");
+const cors = require("cors");
+const colors = require("colors/safe");
 // const helmet = require('helmet');
 
-// const routes = require('./routes');
+const routes = require("./src/routes");
 
 const server = express();
 const port = process.env.PORT;
@@ -11,7 +11,7 @@ const port = process.env.PORT;
 // server.use(helmet());
 
 server.use(cors({ origin: process.env.FRONT_URL }));
-// server.use(routes);
+server.use(routes);
 
 server.listen(port, () => {
   console.log(
