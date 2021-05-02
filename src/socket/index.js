@@ -6,22 +6,22 @@ module.exports = function (socketIo) {
     const roomName = "room 1";
 
     // 참가
-    socket.on("join", userName => {
+    socket.on("join", user => {
       socket.join(roomName);
       console.log("### join ", socket.rooms); // Set { <socket.id>, "room 1" }
-      socketIo.to(roomName).emit(`${userName} has joined the room`); // broadcast to everyone in the room
+      socketIo.to(roomName).emit(`${user.name} has joined the room.`); // broadcast to everyone in the room
     });
 
     // 메시지 송신
-    socket.on("send", message => {
-      socketIo.to(roomName).emit("receive", message); // 방에 참가한 인원들은 메시지 수신
+    socket.on("send", (user, message) => {
+      socketIo.to(roomName).emit("receive", [user, message]); // 방에 참가한 인원들은 메시지 수신
     });
 
     // 나가기
-    socket.on("leave", userName => {
+    socket.on("leave", user => {
       socket.leave(roomName);
       console.log("### leave: ", socket.rooms);
-      socketIo.to(roomName).emit(`${userName} has leaved the room`); // broadcast to everyone in the room
+      socketIo.to(roomName).emit(`${user.name} has leaved the room.`); // broadcast to everyone in the room
     });
   });
 };
