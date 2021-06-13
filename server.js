@@ -1,8 +1,13 @@
 const express = require("express");
 const app = express();
 const server = require("http").createServer(app);
-const socketIo = require("socket.io")(server);
 const cors = require("cors");
+const socketIo = require("socket.io")(server, {
+  cors: {
+    origin: process.env.FRONT_URL,
+    credentials: true,
+  },
+});
 const colors = require("colors/safe");
 // const helmet = require('helmet');
 
@@ -11,8 +16,7 @@ const socket = require("./src/socket");
 
 const port = process.env.PORT;
 // app.use(helmet());
-
-app.use(cors({ origin: process.env.FRONT_URL }));
+app.use(cors({ origin: process.env.FRONT_URL, credentials: true }));
 app.use(routes);
 
 socket(socketIo);

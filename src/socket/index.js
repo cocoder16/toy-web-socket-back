@@ -9,6 +9,7 @@ module.exports = function (socketIo) {
     socket.on("join", user => {
       socket.join(roomName);
       console.log("### join ", socket.rooms); // Set { <socket.id>, "room 1" }
+      console.log("### user: ", user);
       socketIo.to(roomName).emit(`${user.name} has joined the room.`); // broadcast to everyone in the room
     });
 
