@@ -1,5 +1,7 @@
 const colors = require("colors/safe");
 
+const printSocketEventFired = require("../lib/prints/printSocketEventFired");
+
 module.exports = function (socketIo) {
   socketIo.on("connection", function (socket) {
     console.log(`${colors.brightGreen("socket connection succeeded.")}`);
@@ -8,11 +10,10 @@ module.exports = function (socketIo) {
     // 참가
     socket.on("join", user => {
       socket.join(roomName);
-      console.log("### join ", socket.rooms); // Set { <socket.id>, "room 1" }
-      console.log("### user: ", user);
-      socketIo
-        .to(roomName)
-        .emit("receive", { content: `${user.name} has joined the room.` }); // broadcast to everyone in the room
+      printSocketEventFired("join", { user, room: socket.rooms });
+      const content = `${user.name} has joined the room.`;
+      socketIo.to(roomName).emit("receive", { content }); // broadcast to everyone in the room
+      printSocketEventFired("receive", { to: roomName, content });
     });
 
     // 메시지 송신
