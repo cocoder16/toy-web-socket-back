@@ -1,6 +1,7 @@
 const colors = require("colors/safe");
 
 const printSocketEventFired = require("../lib/prints/printSocketEventFired");
+const { formatHourMin } = require("../lib/format/time");
 
 module.exports = function (socketIo) {
   socketIo.on("connection", function (socket) {
@@ -12,8 +13,9 @@ module.exports = function (socketIo) {
       socket.join(roomName);
       printSocketEventFired("join", { user, room: socket.rooms });
       const content = `${user.name} has joined the room.`;
-      socketIo.to(roomName).emit("receive", { content }); // broadcast to everyone in the room
-      printSocketEventFired("receive", { to: roomName, content });
+      const time = formatHourMin(new Date());
+      socketIo.to(roomName).emit("receive", { content, time }); // broadcast to everyone in the room
+      printSocketEventFired("receive", { to: roomName, content, time });
     });
 
     // 메시지 송신
