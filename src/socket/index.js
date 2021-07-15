@@ -14,20 +14,27 @@ module.exports = function (socketIo) {
       printSocketEventFired("join", { user, room: socket.rooms });
       const content = `${user.name} has joined the room.`;
       const time = formatHourMin(new Date());
-      socketIo.to(roomName).emit("receive", { content, time }); // broadcast to everyone in the room
-      printSocketEventFired("receive", { to: roomName, content, time });
+      const data = { content, time };
+      socketIo.to(roomName).emit("receive", data);
+      printSocketEventFired("receive", { to: roomName, ...data });
     });
 
     // 메시지 송신
-    socket.on("send", (user, message) => {
-      socketIo.to(roomName).emit("receive", [user, message]); // 방에 참가한 인원들은 메시지 수신
+    socket.on("send", ({ user, content }) => {
+      const time = formatHourMin(new Date());
+      const data = { nickname: user.name, content, time };
+      socketIo.to(roomName).emit("receive", data);
+      printSocketEventFired("receive", { to: roomName, ...data });
     });
 
     // 나가기
     socket.on("leave", user => {
       socket.leave(roomName);
-      console.log("### leave: ", socket.rooms);
-      socketIo.to(roomName).emit(`${user.name} has leaved the room.`); // broadcast to everyone in the room
+      const content = `${user.name} has leaved the room.`;
+      const time = formatHourMin(new Date());
+      const data = { content, time };
+      socketIo.to(roomName).emit("receive", data);
+      printSocketEventFired("receive", { to: roomName, ...data });
     });
   });
 };
