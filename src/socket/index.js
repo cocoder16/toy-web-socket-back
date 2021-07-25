@@ -10,7 +10,6 @@ module.exports = function (socketIo) {
     console.log(`${colors.brightGreen("socket connection succeeded.")}`);
     const roomName = "room 1";
 
-    // 참가
     socket.on(SOCKET_EVENT.JOIN, user => {
       socket.join(roomName);
       printSocketEventFired(SOCKET_EVENT.JOIN, { user, room: socket.rooms });
@@ -19,6 +18,19 @@ module.exports = function (socketIo) {
       const data = { content, time };
       socketIo.to(roomName).emit(SOCKET_EVENT.RECEIVE, data);
       printSocketEventFired(SOCKET_EVENT.RECEIVE, { to: roomName, ...data }); // TODO: emit 이후에는 항상 로그를 출력하도록, 그리고 fire랑 구분된 메시지로,
+    });
+
+    socket.on(SOCKET_EVENT.UPDATE_NICKNAME, user => {
+      socket.join(roomName);
+      printSocketEventFired(SOCKET_EVENT.UPDATE_NICKNAME, {
+        user,
+        room: socket.rooms,
+      });
+      const content = `User's name has been changed.\n ${user.prevName} => ${user.name}.`;
+      const time = formatHourMin(new Date());
+      const data = { content, time };
+      socketIo.to(roomName).emit(SOCKET_EVENT.RECEIVE, data);
+      printSocketEventFired(SOCKET_EVENT.RECEIVE, { to: roomName, ...data });
     });
 
     // 메시지 송신
