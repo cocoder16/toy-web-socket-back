@@ -14,7 +14,6 @@ const socket = require("./src/socket");
 
 const port = process.env.PORT;
 app.use(cors({ origin: process.env.FRONT_URL, credentials: true }));
-app.use(routes);
 
 socket(socketIo);
 

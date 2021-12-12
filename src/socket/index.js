@@ -1,55 +1,44 @@
 const colors = require("colors/safe");
 
 const SOCKET_EVENT = require("../config/event");
-const printSocketEventFired = require("../lib/prints/printSocketEventFired");
-const { formatHourMin } = require("../lib/format/time");
+const formatHourMin = require("../lib/formatHourMin");
+const { printPingLog, printPongLog } = require("../lib/print");
 
 module.exports = function (socketIo) {
   socketIo.on("connection", function (socket) {
     console.log(`${colors.brightGreen("socket connection succeeded.")}`);
-    const roomName = "room 1";
+    const roomName = "room 1"; // 편의상 모든 유저는 같은 방을 사용
 
-    socket.on(SOCKET_EVENT.JOIN, user => {
+    socket.on(SOCKET_EVENT.JOIN, requestData => {
       socket.join(roomName);
-      printSocketEventFired(SOCKET_EVENT.JOIN, { user, room: socket.rooms });
-      const content = `${user.name} has joined the room.`;
+      printPingLog(SOCKET_EVENT.JOIN, requestData);
+      const content = `${requestData.nickname} has joined the room.`;
       const time = formatHourMin(new Date());
-      const data = { content, time };
-      socketIo.to(roomName).emit(SOCKET_EVENT.RECEIVE, data);
-      printSocketEventFired(SOCKET_EVENT.RECEIVE, { to: roomName, ...data });
+      const responseData = { content, time };
+      socketIo.to(roomName).emit(SOCKET_EVENT.RECEIVE, responseData);
+      printPongLog(SOCKET_EVENT.RECEIVE, responseData);
     });
 
-    socket.on(SOCKET_EVENT.UPDATE_NICKNAME, user => {
+    socket.on(SOCKET_EVENT.UPDATE_NICKNAME, requestData => {
       socket.join(roomName);
-      printSocketEventFired(SOCKET_EVENT.UPDATE_NICKNAME, {
-        user,
-        room: socket.rooms,
-      });
-      const content = `User's name has been changed.\n ${user.prevName} => ${user.name}.`;
+      printPingLog(SOCKET_EVENT.UPDATE_NICKNAME, requestData);
+      const content = `User's name has been changed.\n ${requestData.prevNickname} => ${requestData.nickname}.`;
       const time = formatHourMin(new Date());
-      const data = { content, time };
-      socketIo.to(roomName).emit(SOCKET_EVENT.RECEIVE, data);
-      printSocketEventFired(SOCKET_EVENT.RECEIVE, { to: roomName, ...data });
+      const responseData = { content, time };
+      socketIo.to(roomName).emit(SOCKET_EVENT.RECEIVE, responseData);
+      printPongLog(SOCKET_EVENT.RECEIVE, responseData);
     });
 
-    // 메시지 송신
-    socket.on(SOCKET_EVENT.SEND, ({ user, content }) => {
+    socket.on(SOCKET_EVENT.SEND, requestData => {
+      printPingLog(SOCKET_EVENT.SEND, requestData);
       const time = formatHourMin(new Date());
-      const data = { nickname: user.name, content, time };
-      printSocketEventFired(SOCKET_EVENT.SEND, { user, content });
-      socketIo.to(roomName).emit(SOCKET_EVENT.RECEIVE, data);
-      printSocketEventFired(SOCKET_EVENT.RECEIVE, { to: roomName, ...data });
-    });
-
-    // 나가기
-    socket.on(SOCKET_EVENT.LEAVE, user => {
-      socket.leave(roomName);
-      printSocketEventFired(SOCKET_EVENT.LEAVE, { user });
-      const content = `${user.name} has leaved the room.`;
-      const time = formatHourMin(new Date());
-      const data = { content, time };
-      socketIo.to(roomName).emit(SOCKET_EVENT.RECEIVE, data);
-      printSocketEventFired(SOCKET_EVENT.RECEIVE, { to: roomName, ...data });
+      const responseData = {
+        nickname: requestData.nickname,
+        content: requestData.content,
+        time,
+      };
+      socketIo.to(roomName).emit(SOCKET_EVENT.RECEIVE, responseData);
+      printPongLog(SOCKET_EVENT.SEND, responseData);
     });
 
     socket.on("disconnect", reason => {

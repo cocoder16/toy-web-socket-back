@@ -16,4 +16,4 @@ function formatHourMin(date) {
   return `${hours}:${minutes}`;
 }
 
-module.exports = { formatHourMin };
+module.exports = formatHourMin;
