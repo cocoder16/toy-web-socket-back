@@ -9,13 +9,10 @@ const socketIo = require("socket.io")(server, {
   },
 });
 const colors = require("colors/safe");
-// const helmet = require('helmet');
 
-const routes = require("./src/routes");
 const socket = require("./src/socket");
 
 const port = process.env.PORT;
-// app.use(helmet());
 app.use(cors({ origin: process.env.FRONT_URL, credentials: true }));
 app.use(routes);
 

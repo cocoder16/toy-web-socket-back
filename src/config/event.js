@@ -6,4 +6,4 @@ const SOCKET_EVENT = {
   LEAVE: "LEAVE",
 };
 
-module.exports = { SOCKET_EVENT };
+module.exports = SOCKET_EVENT;
