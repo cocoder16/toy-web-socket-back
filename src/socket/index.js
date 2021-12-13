@@ -14,7 +14,9 @@ module.exports = function (socketIo) {
     console.log(`${colors.brightGreen("socket connection succeeded.")}`);
     const roomName = "room 1"; // 편의상 모든 유저는 같은 방을 사용
 
-    Object.keys(SOCKET_EVENT).forEach(type => {
+    Object.keys(SOCKET_EVENT).forEach(typeKey => {
+      const type = SOCKET_EVENT[typeKey];
+
       socket.on(type, requestData => {
         const firstVisit = type === SOCKET_EVENT.JOIN_ROOM;
 
@@ -22,7 +24,6 @@ module.exports = function (socketIo) {
           socket.join(roomName);
         }
 
-        socket.join(roomName);
         const responseData = {
           ...requestData,
           type,
