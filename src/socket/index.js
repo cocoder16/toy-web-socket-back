@@ -13,7 +13,7 @@ module.exports = function (socketIo) {
       socket.join(roomName);
       printPingLog(SOCKET_EVENT.JOIN_ROOM, requestData);
       const content = `${requestData.nickname} has joined the room.`;
-      const time = formatHourMin(new Date());
+      const time = new Date();
       const responseData = { content, time };
       socketIo.to(roomName).emit(SOCKET_EVENT.RECEIVE_MESSAGE, responseData);
       printPongLog(SOCKET_EVENT.RECEIVE_MESSAGE, responseData);
@@ -23,7 +23,7 @@ module.exports = function (socketIo) {
       socket.join(roomName);
       printPingLog(SOCKET_EVENT.UPDATE_NICKNAME, requestData);
       const content = `User's name has been changed.\n ${requestData.prevNickname} => ${requestData.nickname}.`;
-      const time = formatHourMin(new Date());
+      const time = new Date();
       const responseData = { content, time };
       socketIo.to(roomName).emit(SOCKET_EVENT.RECEIVE_MESSAGE, responseData);
       printPongLog(SOCKET_EVENT.RECEIVE_MESSAGE, responseData);
@@ -31,7 +31,7 @@ module.exports = function (socketIo) {
 
     socket.on(SOCKET_EVENT.SEND_MESSAGE, requestData => {
       printPingLog(SOCKET_EVENT.SEND_MESSAGE, requestData);
-      const time = formatHourMin(new Date());
+      const time = new Date();
       const responseData = {
         nickname: requestData.nickname,
         content: requestData.content,
